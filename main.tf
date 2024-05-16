@@ -71,6 +71,21 @@ module "security_group" {
   tags = local.tags
 }
 
+resource "random_password" "password" {
+  length           = 16
+  special          = true
+  override_special = "_%@"
+}
+
+resource "aws_secretsmanager_secret" "rds_password" {
+  name = "rds_password"
+}
+
+resource "aws_secretsmanager_secret_version" "rds_password" {
+  secret_id     = aws_secretsmanager_secret.rds_password.id
+  secret_string = random_password.password.result
+}
+
 module "db" {
   source  = "terraform-aws-modules/rds/aws"
   version = "6.6.0"
@@ -90,6 +105,7 @@ module "db" {
   port     = local.port
 
   manage_master_user_password = false
+  password                    = aws_secretsmanager_secret_version.rds_password.secret_string
 
   multi_az               = true
   db_subnet_group_name   = module.vpc.database_subnet_group_name
