@@ -73,6 +73,15 @@ resource "aws_instance" "bastion" {
 
   associate_public_ip_address = true
 
+  user_data = <<-EOF
+              #!/bin/bash
+              yum update -y
+              yum install python3 python3-pip -y
+              pip3 install ansible pymysql boto3
+              yum install  gcc python-devel mysql-devel -y
+              pip3 install --upgrade pip
+              EOF
+
   tags = {
     Name = local.bastion_name
   }
