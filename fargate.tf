@@ -140,3 +140,132 @@ module "ecs_backend_fargate" {
 
   tags = local.tags
 }
+
+resource "aws_service_discovery_http_namespace" "frontend" {
+  name        = local.frontend_name
+  description = "CloudMap namespace for ${local.frontend_name}"
+  tags        = local.tags
+}
+
+resource "aws_cloudwatch_log_group" "frontend_ecs_logs" {
+  name              = "/aws/ecs/frontend"
+  retention_in_days = 14
+}
+
+module "ecs_frontend_fargate" {
+  source  = "terraform-aws-modules/ecs/aws"
+  version = "5.11.1"
+
+  cluster_name = local.frontend_name
+
+  cluster_configuration = {
+    execute_command_configuration = {
+      logging = "OVERRIDE"
+      log_configuration = {
+        cloud_watch_log_group_name = "/aws/ecs/aws-ec2"
+      }
+    }
+  }
+
+  fargate_capacity_providers = {
+    FARGATE = {
+      default_capacity_provider_strategy = {
+        weight = 50
+      }
+    }
+    FARGATE_SPOT = {
+      default_capacity_provider_strategy = {
+        weight = 50
+      }
+    }
+  }
+
+  services = {
+    ecs-frontend = {
+      cpu    = 1024
+      memory = 4096
+
+      container_definitions = {
+
+        (local.ecs_frontend_name) = {
+          cpu       = 512
+          memory    = 1024
+          essential = true
+          image     = "${aws_ecr_repository.frontend_service.repository_url}:latest"
+
+          log_configuration = {
+            logDriver = "awslogs"
+            options = {
+              awslogs-group         = aws_cloudwatch_log_group.frontend_ecs_logs.name
+              awslogs-region        = "us-east-1"
+              awslogs-stream-prefix = "ecs"
+            }
+          }
+          port_mappings = [
+            {
+              name          = local.ecs_frontend_name
+              containerPort = local.frontend_port
+              protocol      = "tcp"
+            }
+          ]
+
+          # Example image used requires access to write to root filesystem
+          readonly_root_filesystem = false
+
+          environment = [
+            {
+              name  = "BACKEND_URL"
+              value = module.backend_alb.dns_name
+            },
+          ]
+
+          memory_reservation = 100
+        }
+      }
+
+      service_connect_configuration = {
+        namespace = aws_service_discovery_http_namespace.frontend.arn
+        service = {
+          client_alias = {
+            port     = local.frontend_port
+            dns_name = local.ecs_frontend_name
+          }
+          port_name      = local.ecs_frontend_name
+          discovery_name = local.ecs_frontend_name
+        }
+      }
+
+      load_balancer = {
+        service = {
+          target_group_arn = module.frontend_alb.target_groups["frontend_ecs"].arn
+          container_name   = local.ecs_frontend_name
+          container_port   = local.frontend_port
+        }
+      }
+
+      subnet_ids = module.vpc.public_subnets
+      security_group_rules = {
+        alb_ingress_3030 = {
+          type                     = "ingress"
+          from_port                = local.frontend_port
+          to_port                  = local.frontend_port
+          protocol                 = "tcp"
+          description              = "Service port"
+          source_security_group_id = module.frontend_alb.security_group_id
+        }
+        egress_all = {
+          type        = "egress"
+          from_port   = 0
+          to_port     = 0
+          protocol    = "-1"
+          cidr_blocks = ["0.0.0.0/0"]
+        }
+      }
+      service_tags = {
+        "ServiceTag" = local.ecs_frontend_name
+      }
+    }
+  }
+
+  tags = local.tags
+}

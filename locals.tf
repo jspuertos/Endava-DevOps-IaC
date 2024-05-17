@@ -27,7 +27,11 @@ locals {
   alb_backend_internal = true
   ecs_backend_name     = "ecs-${local.backend_name}"
 
-  frontend_name = "movie-analyst-ui-${terraform.workspace}"
+  frontend_name         = "movie-analyst-ui-${terraform.workspace}"
+  frontend_port         = 3030
+  alb_frontend_name     = "alb-${local.frontend_name}"
+  alb_frontend_internal = false
+  ecs_frontend_name     = "ecs-${local.frontend_name}"
 
   tags = {
     Terraform = "true"
