@@ -8,3 +8,7 @@ data "aws_ami" "amazon_linux_2" {
   }
   owners = ["amazon"]
 }
+
+data "aws_ssm_parameter" "fluentbit" {
+  name = "/aws/service/aws-for-fluent-bit/stable"
+}

@@ -3,16 +3,16 @@ module "security_group" {
   version = "5.1.2"
 
   name        = local.db_sg_name
-  description = "PostgreSQL security group"
+  description = "MySQL security group"
   vpc_id      = module.vpc.vpc_id
 
   # ingress
   ingress_with_cidr_blocks = [
     {
-      from_port   = 5432
-      to_port     = 5432
+      from_port   = 3306
+      to_port     = 3306
       protocol    = "tcp"
-      description = "PostgreSQL access from within VPC"
+      description = "MySQL access from within VPC"
       cidr_blocks = module.vpc.vpc_cidr_block
     },
   ]
@@ -62,7 +62,7 @@ module "db" {
 
   maintenance_window              = "Mon:00:00-Mon:03:00"
   backup_window                   = "03:00-06:00"
-  enabled_cloudwatch_logs_exports = ["postgresql", "upgrade"]
+  enabled_cloudwatch_logs_exports = ["general"]
 
   skip_final_snapshot = true
   deletion_protection = false

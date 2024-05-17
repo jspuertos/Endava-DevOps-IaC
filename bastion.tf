@@ -54,8 +54,8 @@ module "bastion_security_group" {
       cidr_blocks = "0.0.0.0/0"
     },
     {
-      from_port   = 5432
-      to_port     = 5432
+      from_port   = 3306
+      to_port     = 3306
       protocol    = "tcp"
       description = "Bastion allow requests to RDS"
       cidr_blocks = "10.0.0.0/16"
