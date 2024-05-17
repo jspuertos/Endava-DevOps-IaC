@@ -17,7 +17,7 @@ module "backend_alb" {
       from_port   = local.backend_port
       to_port     = local.backend_port
       ip_protocol = "tcp"
-      cidr_ipv4   = module.vpc.vpc_cidr_block
+      cidr_ipv4   = "0.0.0.0/0"
     }
   }
   security_group_egress_rules = {
