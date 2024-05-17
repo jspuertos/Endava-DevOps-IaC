@@ -1,4 +1,3 @@
-/*
 resource "aws_service_discovery_http_namespace" "backend" {
   name        = local.backend_name
   description = "CloudMap namespace for ${local.backend_name}"
@@ -45,6 +44,15 @@ module "ecs_backend_fargate" {
           memory    = 1024
           essential = true
           image     = "${aws_ecr_repository.backend_service.repository_url}:latest"
+
+          log_configuration = {
+            logDriver = "awslogs"
+            options = {
+              awslogs-group         = "/aws/ecs/aws-ec2"
+              awslogs-region        = "us-east-1"
+              awslogs-stream-prefix = local.backend_name
+            }
+          }
           port_mappings = [
             {
               name          = local.ecs_backend_name
@@ -58,22 +66,22 @@ module "ecs_backend_fargate" {
 
           environment = [
             {
-                name = "DB_HOST"
-                value = module.db.db_instance_endpoint
+              name  = "DB_HOST"
+              value = module.db.db_instance_endpoint
             },
             {
-                name = "DB_USER"
-                value = "applicationuser"
+              name  = "DB_USER"
+              value = "applicationuser"
             },
             {
-                name = "DB_NAME"
-                value = "movie_db"
+              name  = "DB_NAME"
+              value = "movie_db"
             },
           ]
           secrets = [
             {
-                name = "DB_PASS"
-                valueFrom = aws_secretsmanager_secret_version.rds_password.arn
+              name      = "DB_PASS"
+              valueFrom = aws_secretsmanager_secret_version.rds_password.arn
             },
           ]
 
@@ -127,4 +135,3 @@ module "ecs_backend_fargate" {
 
   tags = local.tags
 }
-*/
