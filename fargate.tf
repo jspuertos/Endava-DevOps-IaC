@@ -4,6 +4,11 @@ resource "aws_service_discovery_http_namespace" "backend" {
   tags        = local.tags
 }
 
+resource "aws_cloudwatch_log_group" "backend_ecs_logs" {
+  name              = "/aws/ecs/backend"
+  retention_in_days = 14
+}
+
 module "ecs_backend_fargate" {
   source  = "terraform-aws-modules/ecs/aws"
   version = "5.11.1"
@@ -48,9 +53,9 @@ module "ecs_backend_fargate" {
           log_configuration = {
             logDriver = "awslogs"
             options = {
-              awslogs-group         = "/aws/ecs/aws-ec2"
+              awslogs-group         = aws_cloudwatch_log_group.backend_ecs_logs.name
               awslogs-region        = "us-east-1"
-              awslogs-stream-prefix = local.backend_name
+              awslogs-stream-prefix = "ecs"
             }
           }
           port_mappings = [
