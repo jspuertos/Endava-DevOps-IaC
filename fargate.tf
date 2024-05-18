@@ -188,6 +188,10 @@ module "ecs_frontend_fargate" {
 
       assign_public_ip = true
 
+      deployment_controller = {
+        type = "CODE_DEPLOY"
+      }
+
       container_definitions = {
 
         (local.ecs_frontend_name) = {
@@ -195,6 +199,7 @@ module "ecs_frontend_fargate" {
           memory    = 1024
           essential = true
           image     = "${aws_ecr_repository.frontend_service.repository_url}:latest"
+
 
           log_configuration = {
             logDriver = "awslogs"
