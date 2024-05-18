@@ -188,10 +188,6 @@ module "ecs_frontend_fargate" {
 
       assign_public_ip = true
 
-      deployment_controller = {
-        type = "CODE_DEPLOY"
-      }
-
       container_definitions = {
 
         (local.ecs_frontend_name) = {
