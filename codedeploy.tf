@@ -9,7 +9,7 @@ resource "aws_iam_role" "code_deploy" {
         Action = "sts:AssumeRole"
         Effect = "Allow"
         Principal = {
-          Service = "ecs-tasks.amazonaws.com"
+          Service = "codedeploy.amazonaws.com"
         }
       },
     ]
