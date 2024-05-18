@@ -185,14 +185,15 @@ module "ecs_frontend_fargate" {
       cpu    = 1024
       memory = 4096
 
+      assign_public_ip = true
+
       container_definitions = {
 
         (local.ecs_frontend_name) = {
           cpu       = 512
           memory    = 1024
           essential = true
-          # image     = "${aws_ecr_repository.frontend_service.repository_url}:latest"
-          image = "nginx:latest"
+          image     = "${aws_ecr_repository.frontend_service.repository_url}:latest"
 
           log_configuration = {
             logDriver = "awslogs"
