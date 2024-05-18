@@ -133,7 +133,7 @@ module "frontend_alb" {
     },
 
     frontend_ecs_2 = {
-      name                              = local.ecs_frontend_name
+      name                              = "${local.ecs_frontend_name}_2"
       protocol                          = "HTTP"
       port                              = local.frontend_port
       target_type                       = "ip"
