@@ -132,7 +132,7 @@ module "frontend_alb" {
       create_attachment = false
     },
 
-    frontend_ecs_2 = {
+    frontend_ecs-2 = {
       name                              = "${local.ecs_frontend_name}-2"
       protocol                          = "HTTP"
       port                              = local.frontend_port
