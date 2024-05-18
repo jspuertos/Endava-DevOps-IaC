@@ -94,7 +94,7 @@ resource "aws_codedeploy_deployment_group" "frontend" {
 
   ecs_service {
     cluster_name = module.ecs_frontend_fargate.cluster_name
-    service_name = local.ecs_frontend_name
+    service_name = "ecs-frontend"
   }
 
   load_balancer_info {
