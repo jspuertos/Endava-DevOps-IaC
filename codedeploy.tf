@@ -100,7 +100,7 @@ resource "aws_codedeploy_deployment_group" "frontend" {
   load_balancer_info {
     target_group_pair_info {
       prod_traffic_route {
-        listener_arns = module.frontend_alb.listeners
+        listener_arns = [module.frontend_alb.listeners["ex_http"].arn]
       }
 
       target_group {
