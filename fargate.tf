@@ -71,9 +71,8 @@ module "ecs_backend_fargate" {
 
           environment = [
             {
-              name = "DB_HOST"
-              # value = module.db.db_instance_endpoint
-              value = "10.0.8.139"
+              name  = "DB_HOST"
+              value = module.db.db_instance_endpoint
             },
             {
               name  = "DB_USER"
