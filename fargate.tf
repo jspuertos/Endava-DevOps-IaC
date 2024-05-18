@@ -215,7 +215,7 @@ module "ecs_frontend_fargate" {
           environment = [
             {
               name  = "BACKEND_URL"
-              value = module.backend_alb.dns_name
+              value = "${module.backend_alb.dns_name}:${local.backend_port}"
             },
           ]
 
