@@ -19,7 +19,7 @@ module "ecs_backend_fargate" {
     execute_command_configuration = {
       logging = "OVERRIDE"
       log_configuration = {
-        cloud_watch_log_group_name = "/aws/ecs/aws-ec2"
+        cloud_watch_log_group_name = aws_cloudwatch_log_group.backend_ecs_logs.name
       }
     }
   }
@@ -162,7 +162,7 @@ module "ecs_frontend_fargate" {
     execute_command_configuration = {
       logging = "OVERRIDE"
       log_configuration = {
-        cloud_watch_log_group_name = "/aws/ecs/aws-ec2"
+        cloud_watch_log_group_name = aws_cloudwatch_log_group.frontend_ecs_logs.name
       }
     }
   }
@@ -191,7 +191,7 @@ module "ecs_frontend_fargate" {
           cpu       = 512
           memory    = 1024
           essential = true
-          image     = "${aws_ecr_repository.backend_service.repository_url}:latest"
+          image     = "${aws_ecr_repository.frontend_service.repository_url}:latest"
 
           log_configuration = {
             logDriver = "awslogs"
