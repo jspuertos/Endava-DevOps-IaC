@@ -17,7 +17,7 @@ module "backend_alb" {
       from_port   = local.backend_port
       to_port     = local.backend_port
       ip_protocol = "tcp"
-      cidr_ipv4   = "0.0.0.0/0"
+      cidr_ipv4   = module.vpc.vpc_cidr_block
     }
   }
   security_group_egress_rules = {
@@ -83,10 +83,10 @@ module "frontend_alb" {
 
   security_group_ingress_rules = {
     all_http = {
-      from_port   = local.frontend_port
-      to_port     = local.frontend_port
+      from_port   = 80
+      to_port     = 80
       ip_protocol = "tcp"
-      cidr_ipv4   = module.vpc.vpc_cidr_block
+      cidr_ipv4   = "0.0.0.0/0"
     }
   }
   security_group_egress_rules = {
@@ -98,7 +98,7 @@ module "frontend_alb" {
 
   listeners = {
     ex_http = {
-      port     = local.frontend_port
+      port     = 80
       protocol = "HTTP"
 
       forward = {
