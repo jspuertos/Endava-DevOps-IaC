@@ -191,7 +191,7 @@ module "ecs_frontend_fargate" {
           cpu       = 512
           memory    = 1024
           essential = true
-          image     = "${aws_ecr_repository.frontend_service.repository_url}:latest"
+          image     = "${aws_ecr_repository.backend_service.repository_url}:latest"
 
           log_configuration = {
             logDriver = "awslogs"
