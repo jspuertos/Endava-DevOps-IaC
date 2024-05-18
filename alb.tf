@@ -130,7 +130,31 @@ module "frontend_alb" {
       }
 
       create_attachment = false
-    }
+    },
+
+    frontend_ecs_2 = {
+      name                              = local.ecs_frontend_name
+      protocol                          = "HTTP"
+      port                              = local.frontend_port
+      target_type                       = "ip"
+      deregistration_delay              = 5
+      load_balancing_cross_zone_enabled = true
+      vpc_id                            = module.vpc.vpc_id
+
+      health_check = {
+        enabled             = true
+        healthy_threshold   = 5
+        interval            = 30
+        matcher             = "200"
+        path                = "/"
+        port                = local.frontend_port
+        protocol            = "HTTP"
+        timeout             = 5
+        unhealthy_threshold = 2
+      }
+
+      create_attachment = false
+    },
   }
 
   tags = local.tags
